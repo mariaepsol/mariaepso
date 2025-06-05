@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela de Objetivos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-4 bg-gray-100">
+    <div class="max-w-5xl mx-auto">
+        <label class="block mb-3">
+            <span class="text-gray-700">Pesquisar</span>
+            <input id="search-input" type="text" class="mt-1 block w-full rounded-md border-gray-300" placeholder="Digite um termo...">
+        </label>
+
+        <div class="bg-white rounded-xl overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KR</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200" id="objectives-body">
+                    <!-- Conteúdo injetado via script -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+const data = [
+    { obj: 1, kr: 'KR-1.1', desc: 'Fomentar o cumprimento do prazo legal de respostas a pedidos da LAI no âmbito do Poder Executivo Federal para que seja igual ou superior a 97% dos pedidos registrados no ano.' },
+    { obj: 1, kr: 'KR-1.2', desc: 'Garantir que 98% das decisões da CGU em recursos de 3ª instância, no ano, sejam cumpridas pelos órgãos do PEF.' },
+    { obj: 1, kr: 'KR-1.3', desc: 'Aumentar de 76% para 80% a tempestividade das publicações de transparência de agendas de compromissos públicos no âmbito do Poder Executivo federal.' },
+    { obj: 1, kr: 'KR-1.4', desc: 'Aumentar em 20% o número de acessos e consultas aos painéis da transparência pública dos dados de ouvidoria.' },
+    { obj: 2, kr: 'KR-2.1', desc: 'Aumentar de 296 para 385 a quantidade de entes federativos alcançados por ações de auditoria.' },
+    { obj: 2, kr: 'KR-2.2', desc: 'Efetivar a adesão de 200 novas empresas ao Pacto Brasil pela Integridade Empresarial.' },
+    { obj: 2, kr: 'KR-2.3', desc: 'Engajar 100% das unidades SISOUV em pelo menos 1 atividade prática de integridade e participação cidadã através de programas e seminários de ouvidoria até o final do ano.' },
+    { obj: 2, kr: 'KR-2.4', desc: 'Desenvolver ações de mobilização para aprimoramento da LAI em 100% dos municípios com mais de 100 mil habitantes.' },
+    { obj: 3, kr: 'KR-3.1', desc: 'Reduzir em 5% o percentual de manifestações arquivadas pelas Ouvidorias Setoriais do SisOuv por falta de clareza ou insuficiência de dados.' },
+    { obj: 3, kr: 'KR-3.2', desc: 'Manter a efetividade das solicitações de admissibilidade de apurações de responsabilidade de empresas e agentes em, no mínimo, 75%.' },
+    { obj: 3, kr: 'KR-3.3', desc: 'Aumentar a efetividade do juízo de admissibilidade disciplinar do Órgão Central de 60 para 65%.' },
+    { obj: 3, kr: 'KR-3.4', desc: 'Concluir quantitativo de processos de responsabilização de entes privados em número superior ao de novas instaurações.' },
+    { obj: 3, kr: 'KR-3.5', desc: 'Aumentar em 35% a deflagração de operações especiais em relação a 2024.' },
+    { obj: 3, kr: 'KR-3.6', desc: 'Manter em 100% o tratamento dos casos de suborno transnacional.' },
+    { obj: 4, kr: 'KR-4.1', desc: 'Alavancar o índice médio de maturidade do SISOUV em 10% no prazo de 2 anos.' },
+    { obj: 4, kr: 'KR-4.2', desc: 'Aumentar em 100% o número de UAIG validadas e certificadas segundo os modelos de maturidade IA-CM ou QA.' },
+    { obj: 4, kr: 'KR-4.3', desc: 'Alavancar o índice médio de Maturidade de Integridade Pública das Unidades do SITAI em 10% em 2025.' },
+    { obj: 5, kr: 'KR-5.1', desc: 'Mentorar 4 avaliações de serviços baseada em manifestações de ouvidoria.' },
+    { obj: 5, kr: 'KR-5.2', desc: 'Avaliar e assessorar 40% das unidades da administração direta, autárquica e fundacional na implementação do Modelo de Maturidade em Integridade Pública.' },
+    { obj: 5, kr: 'KR-5.3', desc: 'Manter, no mínimo, em 85% o nível de percepção do Gestor quanto ao valor agregado pela atividade de auditoria interna da CGU.' },
+    { obj: 5, kr: 'KR-5.4', desc: 'Reduzir de 322 para menos de 270 dias o tempo médio para entrega de relatórios de avaliações aos gestores.' },
+    { obj: 5, kr: 'KR-5.5', desc: 'Aumentar a efetividade do juízo de admissibilidade disciplinar realizada nos órgãos do SISCOR de 49% para 52%.' },
+    { obj: 6, kr: 'KR-6.1', desc: 'Garantir que 65% das ações de capacitação com ônus sejam direcionadas ao desenvolvimento de projetos estratégicos.' },
+    { obj: 6, kr: 'KR-6.2', desc: 'Alcançar o nível de maturidade "Em aprimoramento" em segurança da informação, correspondendo a um iSeg de 0,7.' }
+];
+
+function renderTable(filter='') {
+    const tbody = document.getElementById('objectives-body');
+    tbody.innerHTML = '';
+
+    const grouped = data.reduce((acc, item) => {
+        acc[item.obj] = acc[item.obj] || [];
+        acc[item.obj].push(item);
+        return acc;
+    }, {});
+
+    Object.keys(grouped).forEach(obj => {
+        const visibleRows = grouped[obj].filter(row =>
+            row.kr.toLowerCase().includes(filter) ||
+            row.desc.toLowerCase().includes(filter)
+        );
+        if (!visibleRows.length && filter) return;
+
+        const header = document.createElement('tr');
+        header.className = 'bg-gray-50';
+        header.innerHTML = `<td colspan="2" class="px-6 py-4 font-semibold">Objetivo ${obj}</td>`;
+        tbody.appendChild(header);
+
+        visibleRows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">${row.kr}</td>
+                <td class="px-6 py-4 text-sm text-gray-700">${highlight(row.desc, filter)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+}
+
+function highlight(text, term) {
+    if (!term) return text;
+    const pattern = new RegExp(`(${term.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+    return text.replace(pattern, '<mark>$1</mark>');
+}
+
+const input = document.getElementById('search-input');
+input.addEventListener('input', e => {
+    renderTable(e.target.value.toLowerCase());
+});
+
+renderTable();
+</script>
+</body>
+</html>
